@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	service "github.com/N78Wy/zero-download/services"
+	service "github.com/hunterx008/zero-manga-downloader/services"
 )
 
 func main() {

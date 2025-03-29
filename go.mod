@@ -1,4 +1,4 @@
-module github.com/N78Wy/zero-download
+module github.com/hunterx008/zero-manga-downloader
 
 go 1.20
 
