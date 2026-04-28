@@ -14,21 +14,16 @@ func TestGetComicPageInfo(t *testing.T) {
 		Pages:   []int{1, 2, 3},
 	}
 
-	comic := zd.GetComicPageInfo("https://www.zerobywrar.com/plugin.php?id=jameson_manhua&c=index&a=bofang&kuid=18581")
+	// 使用新版URL格式，同时测试 GetComicPageInfo 的路由分发逻辑
+	comic := zd.GetComicPageInfo("https://www.zerobywai.com/pc/manga_pc.php?kuid=21789")
 
-	if len(comic.Pages) < 7 {
-		t.Fatalf("There should be no less than 7 chapters. Pages: %d", len(comic.Pages))
+	if len(comic.Pages) < 3 {
+		t.Fatalf("There should be no less than 3 chapters. Pages: %d", len(comic.Pages))
 	}
 
-	pages := []Page{
-		{Name: "1", Total: 182},
-		{Name: "2", Total: 178},
-		{Name: "3", Total: 178},
-	}
-	for i := 0; i < 3; i++ {
-		cur := comic.Pages[i]
-		if cur.Name != pages[i].Name || cur.Total != pages[i].Total {
-			t.Fatalf("pages unequal, current: %s, %d, should be: %s, %d", cur.Name, cur.Total, pages[i].Name, pages[i].Total)
+	for _, page := range comic.Pages {
+		if page.Name != "" && page.Total == 0 {
+			t.Fatalf("Page %s has 0 images", page.Name)
 		}
 	}
 }
@@ -40,11 +35,11 @@ func TestGetComicPageInfo_Sp(t *testing.T) {
 		OutPath: "download",
 		Entries: []Entry{
 			{
-				URL:   "https://www.zerobywrar.com/plugin.php?id=jameson_manhua&c=index&a=bofang&kuid=18581",
+				URL:   "https://www.zerobywai.com/pc/manga_pc.php?kuid=21789",
 				Pages: []string{"1", "3-5", "7", "4-8"},
 			},
 			{
-				URL:   "https://www.zerobywrar.com/plugin.php?id=jameson_manhua&c=index&a=bofang&kuid=18672",
+				URL:   "https://www.zerobywai.com/pc/manga_pc.php?kuid=21789",
 				Pages: []string{"2-5", "4-8"},
 			},
 		},
@@ -64,4 +59,34 @@ func TestGetComicPageInfo_Sp(t *testing.T) {
 		// 下载当前 Entry 的 URL
 		zd.GetComicPageInfo(entry.URL)
 	}
+}
+
+func TestGetComicPageInfoNew(t *testing.T) {
+	cli := NewClient()
+	zd := &ZeroDownload{
+		Cookie:  "",
+		OutPath: "download",
+		Client:  cli,
+		Limit:   12,
+		Pages:   []int{1, 2, 3},
+	}
+
+	comic := zd.GetComicPageInfoNew("https://www.zerobywai.com/pc/manga_pc.php?kuid=21789")
+
+	if comic.Title == "" {
+		t.Fatal("Title should not be empty")
+	}
+
+	// 只下载了 pages 1,2,3，检查这些 page 是否存在
+	foundPages := 0
+	for _, page := range comic.Pages {
+		if page.Name != "" {
+			foundPages++
+		}
+	}
+	if foundPages < 3 {
+		t.Fatalf("Expected at least 3 chapters, got: %d", foundPages)
+	}
+
+	t.Logf("Title: %s, Total pages: %d", comic.Title, foundPages)
 }

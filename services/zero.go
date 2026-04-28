@@ -151,7 +151,20 @@ func (zd *ZeroDownload) DownloadImage(url, path string, retry *int) {
 	log.Printf("Success/下载图片成功: %s", imagePath)
 }
 
+// GetComicPageInfo detects the URL format and dispatches to the appropriate parser.
+// New format: /pc/manga_pc.php?kuid=...
+// Legacy format: /plugin.php?id=jameson_manhua&c=index&a=bofang&kuid=...
 func (zd *ZeroDownload) GetComicPageInfo(url string) *Comic {
+	if strings.Contains(url, "/pc/manga_pc.php") {
+		log.Printf("Detected new page format/检测到新版页面格式: %s", url)
+		return zd.GetComicPageInfoNew(url)
+	}
+	log.Printf("Detected legacy page format/检测到旧版页面格式: %s", url)
+	return zd.GetComicPageInfoLegacy(url)
+}
+
+// GetComicPageInfoLegacy parses the legacy page format (plugin.php?id=jameson_manhua&...).
+func (zd *ZeroDownload) GetComicPageInfoLegacy(url string) *Comic {
 	res, err := zd.Requert(url)
 	if err != nil {
 		log.Fatal(err)
@@ -175,7 +188,7 @@ func (zd *ZeroDownload) GetComicPageInfo(url string) *Comic {
 		Title: string(til),
 	}
 
-	log.Printf("Preparing to obtain chapter information/准备获取章节信息: %s", comic.Title)
+	log.Printf("Preparing to obtain chapter information/准备获取章节信息(旧版): %s", comic.Title)
 
 	wg := &sync.WaitGroup{}
 	pages := doc.Find(".uk-grid-collapse .muludiv a")
