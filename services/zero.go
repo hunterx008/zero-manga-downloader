@@ -230,7 +230,15 @@ func (zd *ZeroDownload) GetComicPageInfo(url string) *Comic {
 				log.Fatal(err)
 			}
 
-			imgs := doc.Find(".uk-zjimg img")
+			// 检测章节页面是否返回了登录页面（cookie 过期）
+			// 正常章节页面包含 .uk-zjimg 容器，登录页面则没有
+			imgContainer := doc.Find(".uk-zjimg")
+			if imgContainer.Length() == 0 {
+				log.Fatalf("[ERROR] Cookie expired when fetching chapter %s! The page returned a login form instead of manga content. Please update cookie in config.json\n"+
+					"[错误] 获取章节 %s 时检测到Cookie已过期！页面返回了登录表单而非漫画内容，请更新config.json中的cookie", page.Name, page.Name)
+			}
+
+			imgs := imgContainer.Find("img")
 			page.Total = imgs.Length()
 			page.Urls = make([]string, page.Total)
 
