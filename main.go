@@ -30,8 +30,5 @@ func main() {
 	}
 
 	log.Printf("DONE! Press any key to exit!/下载完成! 任意按键退出!")
-	_, err := fmt.Scanln()
-	if err != nil {
-		//TODO
-	}
+	_, _ = fmt.Scanln()
 }
