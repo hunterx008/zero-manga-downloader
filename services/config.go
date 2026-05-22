@@ -10,16 +10,19 @@ import (
 )
 
 type Entry struct {
-	URL      string   `mapstructure:"url" json:"url"`
-	Pages    []string `mapstructure:"pages" json:"pages"` // 支持 "1", "3-5" 格式
-	PagesInt []int    `mapstructure:"-" json:"-"`         // 解析后的整数集合
+	URL             string   `mapstructure:"url" json:"url"`
+	Pages           []string `mapstructure:"pages" json:"pages"`                               // 支持 "1", "3-5" 格式
+	PagesInt        []int    `mapstructure:"-" json:"-"`                                       // 解析后的整数集合
+	PdfNameTemplate string   `mapstructure:"pdfNameTemplate" json:"pdfNameTemplate,omitempty"` // 非空时覆盖全局 pdfNameTemplate
 }
 
 type Config struct {
-	Cookie  string  `mapstructure:"cookie" json:"cookie"`
-	OutPath string  `mapstructure:"outPath" json:"outPath"`
-	Limit   int     `mapstructure:"limit" json:"limit"`
-	Entries []Entry `mapstructure:"entries" json:"entries"` // 替换原有的 urls 和 page
+	Cookie          string  `mapstructure:"cookie" json:"cookie"`
+	OutPath         string  `mapstructure:"outPath" json:"outPath"`
+	Limit           int     `mapstructure:"limit" json:"limit"`
+	Entries         []Entry `mapstructure:"entries" json:"entries"` // 替换原有的 urls 和 page
+	ConvertToPdf    bool    `mapstructure:"convertToPdf" json:"convertToPdf"`
+	PdfNameTemplate string  `mapstructure:"pdfNameTemplate" json:"pdfNameTemplate,omitempty"` // 可用占位符 {chapter}；空则使用下载下来的卷名
 }
 
 func (c *Config) LoadConfig(path string) {

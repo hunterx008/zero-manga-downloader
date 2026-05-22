@@ -2,6 +2,8 @@
     "cookie": "YOUR_COOKIE_HERE",
     "outPath": "/home/zhigangj/docs/manga",
     "limit": 12,
+    "convertToPdf": false,
+    "pdfNameTemplate": "",
     "entries": [
         {
             "url": "https://www.zerobywai.com/plugin.php?id=jameson_manhua&c=index&a=bofang&kuid=21796",

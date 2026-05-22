@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -16,11 +17,13 @@ import (
 )
 
 type ZeroDownload struct {
-	Client  *http.Client
-	Cookie  string
-	OutPath string
-	Limit   int
-	Pages   []int // 新增 Pages 字段
+	Client          *http.Client
+	Cookie          string
+	OutPath         string
+	Limit           int
+	Pages           []int // 新增 Pages 字段
+	ConvertToPdf    bool
+	PdfNameTemplate string
 }
 
 type Comic struct {
@@ -98,6 +101,22 @@ func (zd *ZeroDownload) DownloadPage(page Page, path string) {
 		}(url)
 	}
 	wg.Wait()
+
+	if zd.ConvertToPdf {
+		chapterDir := filepath.Join(path, page.Name)
+		ordered := make([]string, 0, len(page.Urls))
+		for _, u := range page.Urls {
+			ordered = append(ordered, zd.getFullPath(u, chapterDir))
+		}
+		pdfName := ResolvePDFFileName(zd.PdfNameTemplate, page.Name)
+		pdfPath := filepath.Join(path, pdfName)
+		log.Printf("Building PDF/正在生成PDF: %s", pdfPath)
+		if err := BuildPdfFromImagePaths(ordered, pdfPath); err != nil {
+			log.Printf("PDF conversion failed/PDF生成失败: %v", err)
+		} else {
+			log.Printf("PDF saved/PDF已保存: %s", pdfPath)
+		}
+	}
 }
 
 func (zd *ZeroDownload) DownloadImage(url, path string, retry *int) {
