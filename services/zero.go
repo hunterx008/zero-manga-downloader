@@ -171,12 +171,17 @@ func (zd *ZeroDownload) DownloadImage(url, path string, retry *int) {
 }
 
 // GetComicPageInfo detects the URL format and dispatches to the appropriate parser.
-// New format: /pc/manga_pc.php?kuid=...
+// PC reader list: /pc/manga_pc.php?kuid=...
+// PC details (chapter grid): /pc/details/?kuid=... (uses mangaDownloadChapters + /pc/view/manga_read_pc.php)
 // Legacy format: /plugin.php?id=jameson_manhua&c=index&a=bofang&kuid=...
 func (zd *ZeroDownload) GetComicPageInfo(url string) *Comic {
 	if strings.Contains(url, "/pc/manga_pc.php") {
 		log.Printf("Detected new page format/检测到新版页面格式: %s", url)
 		return zd.GetComicPageInfoNew(url)
+	}
+	if strings.Contains(url, "/pc/details") {
+		log.Printf("Detected PC details page format/检测到PC详情页格式: %s", url)
+		return zd.GetComicPageInfoDetails(url)
 	}
 	log.Printf("Detected legacy page format/检测到旧版页面格式: %s", url)
 	return zd.GetComicPageInfoLegacy(url)

@@ -13,6 +13,12 @@
 | `pdfNameTemplate` | PDF 文件名模板。可使用占位符 `{chapter}`，会替换为该卷的章节名/编号（与下载子目录名一致）。留空则 PDF 文件名为「章节名 + `.pdf`」 |
 | `entries` | 下载任务列表，每项含 `url`、`pages`，可选 `pdfNameTemplate` 覆盖全局的 `pdfNameTemplate` |
 
+**支持的 `entries.url` 形态（站点改版后常用 PC 详情页）：**
+
+- `.../pc/manga_pc.php?kuid=...`（阅读器入口，内嵌 `const chapters`）
+- `.../pc/details/?kuid=...` 或 `.../pc/details?kuid=...`（作品详情 + 章节网格，内嵌 `mangaDownloadChapters`，阅读地址为 `/pc/view/manga_read_pc.php?zjid=...`）
+- 旧版 `plugin.php?id=jameson_manhua&...`（依赖原目录 DOM）
+
 ### PDF 命名示例
 
 - 不开启：`"convertToPdf": false`

@@ -4,6 +4,10 @@ import (
 	"testing"
 )
 
+// testZerobyDetailsURL 用于联网集成测试：PC 详情页（内嵌 mangaDownloadChapters），当前站点上可访问。
+// 若站点再次改版导致 404，请替换为新的详情页 URL（浏览器地址栏复制）。
+const testZerobyDetailsURL = "https://www.zerobywai.com/pc/details/?kuid=21936"
+
 func TestGetComicPageInfo(t *testing.T) {
 	cli := NewClient()
 	zd := &ZeroDownload{
@@ -14,8 +18,8 @@ func TestGetComicPageInfo(t *testing.T) {
 		Pages:   []int{1, 2, 3},
 	}
 
-	// 使用新版URL格式，同时测试 GetComicPageInfo 的路由分发逻辑
-	comic := zd.GetComicPageInfo("https://www.zerobywai.com/pc/manga_pc.php?kuid=21789")
+	// 详情页：走 GetComicPageInfoDetails，覆盖路由分发
+	comic := zd.GetComicPageInfo(testZerobyDetailsURL)
 
 	if len(comic.Pages) < 3 {
 		t.Fatalf("There should be no less than 3 chapters. Pages: %d", len(comic.Pages))
@@ -29,17 +33,16 @@ func TestGetComicPageInfo(t *testing.T) {
 }
 
 func TestGetComicPageInfo_Sp(t *testing.T) {
-	// 测试配置解析
 	cli := NewClient()
 	c := &Config{
 		OutPath: "download",
 		Entries: []Entry{
 			{
-				URL:   "https://www.zerobywai.com/pc/manga_pc.php?kuid=21789",
+				URL:   testZerobyDetailsURL,
 				Pages: []string{"1", "3-5", "7", "4-8"},
 			},
 			{
-				URL:   "https://www.zerobywai.com/pc/manga_pc.php?kuid=21789",
+				URL:   testZerobyDetailsURL,
 				Pages: []string{"2-5", "4-8"},
 			},
 		},
@@ -47,21 +50,20 @@ func TestGetComicPageInfo_Sp(t *testing.T) {
 
 	for _, entry := range c.Entries {
 		parsedPages := c.parsePages(entry.Pages)
-		entry.PagesInt = parsedPages // 需要新增 PagesInt 字段
+		entry.PagesInt = parsedPages
 
 		zd := &ZeroDownload{
 			Cookie:  c.Cookie,
 			OutPath: c.OutPath,
 			Client:  cli,
 			Limit:   c.Limit,
-			Pages:   entry.PagesInt, // 使用当前 Entry 的 Pages
+			Pages:   entry.PagesInt,
 		}
-		// 下载当前 Entry 的 URL
 		zd.GetComicPageInfo(entry.URL)
 	}
 }
 
-func TestGetComicPageInfoNew(t *testing.T) {
+func TestGetComicPageInfoDetails(t *testing.T) {
 	cli := NewClient()
 	zd := &ZeroDownload{
 		Cookie:  "",
@@ -71,13 +73,12 @@ func TestGetComicPageInfoNew(t *testing.T) {
 		Pages:   []int{1, 2, 3},
 	}
 
-	comic := zd.GetComicPageInfoNew("https://www.zerobywai.com/pc/manga_pc.php?kuid=21789")
+	comic := zd.GetComicPageInfoDetails(testZerobyDetailsURL)
 
 	if comic.Title == "" {
 		t.Fatal("Title should not be empty")
 	}
 
-	// 只下载了 pages 1,2,3，检查这些 page 是否存在
 	foundPages := 0
 	for _, page := range comic.Pages {
 		if page.Name != "" {
