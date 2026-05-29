@@ -120,3 +120,13 @@ go install github.com/go-delve/delve/cmd/dlv@latest
 
 - **调试器/扩展** 的编译提示会出现在 **Debug Console**；真正程序日志在 **`console": "integratedTerminal"`** 时应看底部 **Terminal（终端）** 里新开的那一栏，请切换到 **Terminal** 面板。
 - 若程序已结束但 Debug Console 仍像卡住，多半是之前在等非交互的 **`fmt.Scanln()`**；当前 `main.go` 会在标准输入不是终端时**自动跳过**等待。
+
+## 运行测试（`go test`）
+
+联网用例会请求 `www.zerobywai.com`。CI（如 GitHub Actions）**无 Cookie** 时，站点可能返回**空图列表**，测试仍校验章节与阅读页 URL 是否解析成功。
+
+若在本机配置了有效 `Cookie` 并希望**强制**断言每话图片数大于 0，可执行：
+
+```bash
+TEST_REQUIRE_CHAPTER_IMAGES=1 go test -count=1 -race ./services -run TestGetComicPageInfo
+```
