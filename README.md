@@ -35,7 +35,7 @@
 **支持的 `entries.url` 形态（站点改版后常用 PC 详情页）：**
 
 - `.../pc/manga_pc.php?kuid=...`（阅读器入口，内嵌 `const chapters`）
-- `.../pc/details/?kuid=...` 或 `.../pc/details?kuid=...`（作品详情 + 章节网格，内嵌 `mangaDownloadChapters`，阅读地址为 `/pc/view/manga_read_pc.php?zjid=...`）
+- `.../pc/details/?kuid=...` 或 `.../pc/details?kuid=...`（作品详情 + 章节网格，内嵌 `mangaDownloadChapters`，阅读地址为 `/pc/view/index.php?zjid=...`）
 - 旧版 `plugin.php?id=jameson_manhua&...`（依赖原目录 DOM）
 
 ### `entries[].pages` 写法

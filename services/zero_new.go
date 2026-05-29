@@ -90,7 +90,8 @@ func (zd *ZeroDownload) GetComicPageInfoNew(pageURL string) *Comic {
 			}
 		}
 
-		chapterUrl := baseUrl + "manga_read_pc.php?zjid=" + ch.Zjid
+		// Reader URL was manga_read_pc.php; site now uses view/index.php (old path 404).
+		chapterUrl := baseUrl + "view/index.php?zjid=" + ch.Zjid
 		page := Page{
 			Name:    ch.Zjname,
 			PageUrl: chapterUrl,
@@ -143,7 +144,7 @@ func (zd *ZeroDownload) GetComicPageInfoNew(pageURL string) *Comic {
 }
 
 // GetComicPageInfoDetails parses /pc/details/?kuid=... (Tailwind details + chapter grid).
-// Chapter list is in `const mangaDownloadChapters = [...];` reader URLs use /pc/view/manga_read_pc.php?zjid=...
+// Chapter list is in `const mangaDownloadChapters = [...];` reader at /pc/view/index.php?zjid=...
 func (zd *ZeroDownload) GetComicPageInfoDetails(pageURL string) *Comic {
 	res, err := zd.Requert(pageURL)
 	if err != nil {
@@ -211,7 +212,7 @@ func (zd *ZeroDownload) GetComicPageInfoDetails(pageURL string) *Comic {
 			}
 		}
 
-		chapterURL := origin + "/pc/view/manga_read_pc.php?zjid=" + ch.Zjid
+		chapterURL := origin + "/pc/view/index.php?zjid=" + ch.Zjid
 		page := Page{
 			Name:    ch.Zjname,
 			PageUrl: chapterURL,

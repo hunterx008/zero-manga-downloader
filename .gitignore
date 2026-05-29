@@ -4,6 +4,7 @@
 
 logs
 download
+downloads/
 
 # Binaries for programs and plugins
 *.exe

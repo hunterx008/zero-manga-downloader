@@ -172,7 +172,7 @@ func (zd *ZeroDownload) DownloadImage(url, path string, retry *int) {
 
 // GetComicPageInfo detects the URL format and dispatches to the appropriate parser.
 // PC reader list: /pc/manga_pc.php?kuid=...
-// PC details (chapter grid): /pc/details/?kuid=... (uses mangaDownloadChapters + /pc/view/manga_read_pc.php)
+// PC details (chapter grid): /pc/details/?kuid=... (uses mangaDownloadChapters + /pc/view/index.php reader)
 // Legacy format: /plugin.php?id=jameson_manhua&c=index&a=bofang&kuid=...
 func (zd *ZeroDownload) GetComicPageInfo(url string) *Comic {
 	if strings.Contains(url, "/pc/manga_pc.php") {
